@@ -2,8 +2,8 @@
 
 ## 컨텐츠
 현재는 주로 NoSQL 형식의 Storage Table을 위주로 작성되었습니다.
-1. [Table 사용 방법](https://github.com/chupark/AzureStorageAccountOperation#table-%EC%82%AC%EC%9A%A9-%EB%B0%A9%EB%B2%95)
-    * [Storage Account 인증](https://github.com/chupark/AzureStorageAccountOperation#1-storage-account-%EC%9D%B8%EC%A6%9D)
+1. [Table 사용 방법](#table-%EC%82%AC%EC%9A%A9-%EB%B0%A9%EB%B2%95)
+    * [Storage Account 인증](#1-storage-account-%EC%9D%B8%EC%A6%9D)
 
 ## Table 사용 방법
 
@@ -42,4 +42,4 @@ $StorageTableByKey = StorageTable -storageAccoutName $config.Storage.StorageAcco
                                   -key $config.Storage.StorageAccountSharedKey
 ```
 
-#### 테이블 생성
+### 테이블 생성
