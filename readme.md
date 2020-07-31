@@ -8,8 +8,8 @@
 ## Table 사용 방법
 RDB에서 말하는 Row는 Azure Storage Table에선 Entity 라고 부릅니다. Entity의 최대 크기는 1MB이며, Azure Cosmos DB사용시 2MB까지 지정할 수 있습니다.
 Entity의 속성은 최대 255개를 입력할 수 있으며 "PartitionKey", "RowKey"는 반드시 입력해야 할 시스템 속성 입니다. 또 다른 시스템 속성으로 timestamp로 사용자가 직접 지정하거나 데이터가 입력된 시간으로 지정됩니다.
-- PartitionKey : 데이터가 저장될 파티션
-- RowKey : 인덱스
+- PartitionKey(PK) : 데이터가 저장될 파티션
+- RowKey(RK) : 인덱스
 
 Table Storage는 데이터베이스인 만큼 성능 향상을 고려하여 PartitionKey를 사용자가 수동으로 입력해야 합니다. 모든 데이터에 다른 파티션키를 입력해도 안되고, 모든 데이터에 같은 파티션 키를 입력해도 안됩니다. 아래 설명과 예시를 통해서 PartitionKey와 RowKey를 어떻게 디자인 할 수 있는지 설명하겠습니다.
 - 초고속 : PartitionKey와 RowKey를 직접 지정하여 쿼리, 이 경우는 Table Storage에게 데이터의 정확한 주소를 지정함으로써 가장 빠른 쿼리 속도를 보여줍니다.
@@ -100,3 +100,42 @@ $insertData = $StorageTable.insertData('Sample', $data)
 $insertData2 = $StorageTableByKey.insertData('Sample2', $data)
 ```
 
+### 4. 데이터 조회
+
+Odata protocol에 맞춰서 데이터를 조회할 수 있습니다.
+````powershell
+$StorageTable.updateDataByQuery("Sample", $query, $updateData)
+$query = "RowKey eq 'myrowkey' and NumberOfOrders eq 255"
+$queryResult = $StorageTable.selectByQuery('Sample', $query) | ConvertFrom-Json
+$queryResult.value
+````
+
+![데이터 조회](https://raw.githubusercontent.com/chupark/AzureStorageAccountOperation/master/images/4.%20query_result.png)
+
+
+### 5. 데이터 업데이트
+데이터 업데이트는 PartitionKey와 RowKey를 정확히 알아야 업데이트 할 수 있습니다. 이 모듈에선 먼저 Odata쿼리를 사용하여 데이터를 조회 후 PK와 RK를 추출하여 해당되는 Entity를 업데이트 합니다.   
+
+![데이터 업데이트](https://raw.githubusercontent.com/chupark/AzureStorageAccountOperation/master/images/5.%20update1.png)
+
+![데이터 업데이트 결과](https://raw.githubusercontent.com/chupark/AzureStorageAccountOperation/master/images/6.%20update2.png)
+
+
+### 6. 쿼리를 사용한 데이터 삭제
+데이터 삭제도 업데이트와 마찬가지로 PK와 RK를 모두 알아야 합니다. Select -> Delete 방법을 사용합니다.
+
+![데이터 삭제](https://raw.githubusercontent.com/chupark/AzureStorageAccountOperation/master/images/7.%20delete_query.png)   
+
+![데이터 결과](https://raw.githubusercontent.com/chupark/AzureStorageAccountOperation/master/images/8.%20delete_query2.png)   
+
+
+
+### 7. 테이블의 데이터 모두 삭제
+
+테이블의 모든 데이터를 조회한 후 데이터를 삭제하는 방법을 사용합니다.
+![데이터 삭제](https://raw.githubusercontent.com/chupark/AzureStorageAccountOperation/master/images/9.%20delete_byTable1.png)   
+
+![데이터 결과](https://raw.githubusercontent.com/chupark/AzureStorageAccountOperation/master/images/9.%20delete_byTable2.png)   
+
+
+### 8. 테이블 삭제
